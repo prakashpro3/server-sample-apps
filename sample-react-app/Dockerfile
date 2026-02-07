@@ -1,25 +1,20 @@
-# Step 1: Build the React app
-FROM node:22
-
-# Set the working directory inside the container
+FROM node:20-alpine AS build
 WORKDIR /app
-
-# Copy package.json and package-lock.json to install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install
-
-ENV VITE_API_URL=http://143.110.231.76:3000
-
-# Copy the rest of the app's source code
 COPY . .
-
-# Build the React app for production
+ENV VITE_API_URL=http://143.110.231.76:3000
 RUN npm run build
 
-# Expose the port (default port for serve is 4001)
-EXPOSE 5173
+FROM nginx:alpine
 
-# Run the Next.js app
+# Replace FULL nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Remove default server configs
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
