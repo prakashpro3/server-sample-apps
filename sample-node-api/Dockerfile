@@ -17,7 +17,7 @@ ENV PORT=3000
 ENV MONGO_URL='mongodb://root:CIqrnarFGsRbIZ5k@143.110.231.76:27017/?directConnection=true&serverSelectionTimeoutMS=2000&authSource=admin'
 
 # caching redis
-# ENV REDIS_URL='http://143.110.231.76:6379/'
+ENV REDIS_URL='redis://default:pj7ZdweGZFGuhRZR@143.110.231.76:6379'
 ENV REDIS_HOST='143.110.231.76'
 ENV REDIS_PORT='6379'
 ENV REDIS_USERNAME='default'
