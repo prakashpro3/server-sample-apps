@@ -96,7 +96,7 @@ function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>DevOps Learning Dashboard</h1>
+        <h1>DevOps Learning Dashboard - Pro</h1>
         <p className="subtitle">Sample React Application</p>
       </header>
 
