@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'sample-node-api'
+        CONTAINER_NAME = 'sample-node-api'
+        EXTERNAL_PORT = '3000'
+        INTERNAL_PORT = '3000'
+        NETWORK = 'zanrix-net'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('sample-node-api') {
+                    sh "docker build -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+
+        stage('Stop Existing Container') {
+            steps {
+                sh """
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+                """
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh """
+                    docker run -d \
+                        --name ${CONTAINER_NAME} \
+                        --network ${NETWORK} \
+                        -p ${EXTERNAL_PORT}:${INTERNAL_PORT} \
+                        --restart on-failure:5 \
+                        ${IMAGE_NAME}:latest
+                """
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                sh """
+                    sleep 10
+                    curl -f http://localhost:${EXTERNAL_PORT}/health || exit 1
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Node API Deployment successful!'
+        }
+        failure {
+            echo 'Node API Deployment failed!'
+        }
+        always {
+            sh 'docker image prune -f || true'
+        }
+    }
+}
