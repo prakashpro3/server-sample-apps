@@ -7,9 +7,6 @@ WORKDIR /
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Copy npmrc
-COPY .npmrc ./
-
 # Install dependencies
 RUN npm install
 
@@ -38,9 +35,6 @@ ENV MSMQ_QUEUE="task_queue"
 
 # Copy the rest of the application code to the working directory
 COPY . .
-
-# Copy the rest of the application code to the working directory
-RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
